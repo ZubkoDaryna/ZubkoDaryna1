@@ -1,0 +1,7 @@
+﻿  op op op.cpp
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\op op op\op op op.cpp(129,26): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\op op op\op op op.cpp(297,15): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\op op op\op op op.cpp(439,34): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\op op op\op op op.cpp(483,30): warning C4244: =: преобразование "double" в "int", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\op op op\op op op.cpp(509,21): warning C4101: B: неиспользованная локальная переменная
+  op op op.vcxproj -> C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Меню\op op op\x64\Debug\op op op.exe
