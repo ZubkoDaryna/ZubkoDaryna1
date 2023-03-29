@@ -1,0 +1,7 @@
+﻿  ConsoleApplication1.cpp
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(128,16): warning C4244: аргумент: преобразование "double" в "const _Ty", возможна потеря данных
+          with
+          [
+              _Ty=short
+          ]
+  ConsoleApplication1.vcxproj -> C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\x64\Debug\ConsoleApplication1.exe
