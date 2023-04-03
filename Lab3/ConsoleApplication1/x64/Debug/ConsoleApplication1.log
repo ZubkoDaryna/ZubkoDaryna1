@@ -1,7 +1,14 @@
 ﻿  ConsoleApplication1.cpp
-C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(128,16): warning C4244: аргумент: преобразование "double" в "const _Ty", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(31,19): warning C4244: =: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(42,19): warning C4244: =: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(53,19): warning C4244: =: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(130,16): warning C4244: аргумент: преобразование "double" в "const _Ty", возможна потеря данных
           with
           [
               _Ty=short
           ]
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(592,29): warning C4244: аргумент: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(592,26): warning C4244: аргумент: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(592,23): warning C4244: аргумент: преобразование "double" в "short", возможна потеря данных
+C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\ConsoleApplication1\ConsoleApplication1.cpp(886,12): warning C4101: val: неиспользованная локальная переменная
   ConsoleApplication1.vcxproj -> C:\Users\Админ\Desktop\Оце\ZubkoDaryna1\Lab3\Lab3\x64\Debug\ConsoleApplication1.exe

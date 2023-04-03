@@ -4,20 +4,21 @@
 #include <iostream>
 #include <math.h>
 #include<complex>
+#include <fstream>
 
 using namespace std;
 ////////////////////////////////////////////////          Task 1          ////////////////////////////////////////////////
 class Parallelogram
 {
-    double a; // основа
-    double b; // бічна сторона
-    double h; // висота
+    short a; // основа
+    short b; // бічна сторона
+    short h; // висота
     unsigned int color;
 
 public://Конструктори зі стандартними або заданими значеннями для параметрів
     Parallelogram() : a(0), b(0), h(0), color(0) {}
-    Parallelogram(double ai, int c) : a(ai), b(0), h(0), color(c) {}
-    Parallelogram(double ai, double bi, double hi, int ci) : a(ai), b(bi), h(hi), color(ci) {}
+    Parallelogram(short ai, short c) : a(ai), b(0), h(0), color(c) {}
+    Parallelogram(short ai, short bi, short hi, int ci) : a(ai), b(bi), h(hi), color(ci) {}
 
     double getA() const { return a; }
     void setA(double a)
@@ -84,7 +85,8 @@ class ComplexVector
     int state; // стан вектора
 public:
     //1
-    ComplexVector() : v(NULL), num(0), state(0) {}//// ініціалізує змінні значеннями за замовчуванням
+    ComplexVector() : v(NULL), num(0), state(0) {}
+    //виділяє простір для одного елемента та ініціалізує його нулем
 
     ComplexVector(int n);// конструктор, який створює вектор розміром n
     ComplexVector(int n, ComplexShort&); //конструктор, який створює вектор розміром n та ініціалізує його комплексним числом
@@ -128,7 +130,7 @@ ComplexVector::ComplexVector(int n) {//конструктор, який ство
         v[i] = 0.0;
     }
 }
-//3
+//3 n-це розмір вектора, b-значення, яке буде використано для ініціалізації всіх елементів вектора
 ComplexVector::ComplexVector(int n, ComplexShort& b) {//конструктор, який створює вектор розміром n та ініціалізує його комплексним числом;
     if (n <= 0) { v = NULL; num = 0; state = -1; cout << " Vec --> 0 "; }
     num = n;
@@ -150,7 +152,7 @@ ComplexVector::ComplexVector(int n, ComplexShort* p) {// конструктор,
 }
 
 // 4 конструктор копіювання, який створює копію іншого вектора.
-ComplexVector::ComplexVector(const ComplexVector& s) {//конструктор копіювання, який створює копію іншого вектора.
+ComplexVector::ComplexVector(const ComplexVector& s) {
     num = s.num;
     v = new ComplexShort[num];
     state = 0;
@@ -160,8 +162,7 @@ ComplexVector::ComplexVector(const ComplexVector& s) {//конструктор �
 // 4 Оператор присвоєння
 ComplexVector& ComplexVector::operator=(const ComplexVector& s) {
     if (num != s.num)
-    {//Цей блок коду перевіряє, чи є різною кількість елементів у двох векторах.
-        //Якщо вони різні, функція видаляє старий вектор v і створює новий із відповідним розміром.
+    {  //Якщо вони різні, функція видаляє старий вектор v і створює новий із відповідним розміром.
         //Потім він копіює кожен елемент з об’єкта, який призначається поточному об’єкту
         if (v) delete[] v;
         num = s.num;
@@ -255,7 +256,7 @@ void ComplexVector::ScalarMultiply(int scalar) {
         v[i] *= scalar;
     }
 }
-//Проблема з ScalarMultiplyфункцією полягає в тому, що вхідним аргументом scalarє символ без знака, 
+//Проблема з ScalarMultiply функцією полягає в тому, що вхідним аргументом scalar є символ без знака, 
 //максимальне значення якого дорівнює 255. Перемноження складної короткої змінної зі значенням, більшим за 255,
 //призведе до переповнення, що може призвести до неочікуваних результатів.
 
@@ -272,10 +273,289 @@ bool ComplexVector::Compare(const ComplexVector& other) const {
     return true;
 }
 
+////////////////////////////////////////////////          Task 3         /////////////////////////////////////////////////////////////////////////
+class Matrix {
+private:
+    short* data; // pointer to matrix elements
+    int num;// кількість елементів у масиві
+    int state; // стан вектора
+    short rows; // number of rows
+    int cols; // number of columns
+    int error; // error status (e.g. for out-of-bounds access)
 
-void Task1() {
+public:
+
+    void print() const;
+    Matrix Addition(const Matrix& other) const;
+    Matrix subtraction(const Matrix& other) const;
+    bool checkEqual(const Matrix& mat1, const Matrix& mat2) {
+        // Check if the dimensions are the same
+        if (mat1.rows != mat2.rows || mat1.cols != mat2.cols) {
+            return false;
+        }
+
+        // Check if the elements are the same
+        for (int i = 0; i < mat1.rows; i++) {
+            for (int j = 0; j < mat1.cols; j++) {
+                if (mat1.getElement(i, j) != mat2.getElement(i, j)) {
+                    return false;
+                }
+            }
+        }
+
+        // The matrices are equal
+        return true;
+    }
+    Matrix multiplyScalar(short scalar) const {
+        Matrix result(rows, cols);
+        for (int i = 0; i < rows * cols; i++) {
+            result.data[i] = data[i] * scalar;
+        }
+        return result;
+    }
+    // 1 Constructor without parameters: allocates space for a 4x4 matrix and initializes it to zero
+    Matrix() : rows(4), cols(4), error(0), num(rows* cols) {
+        data = new short[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = 0;
+        }
+    }
+    //2
+    Matrix(int n) : rows(n), cols(n), error(0) {
+        if (n <= 0) {
+            data = NULL;
+            num = 0;
+            state = -1;
+            cout << "Matrix size is invalid. Setting data to NULL." << endl;
+        }
+        else {
+            data = new short[n * n];
+            for (int i = 0; i < n * n; i++) {
+                data[i] = 0;
+            }
+        }
+    }
+    //3
+    Matrix(int n, int m, short value) : rows(n), cols(m), error(0) {
+        rows = n; cols = m;
+
+        if (n <= 0 || m <= 0) {
+            data = NULL;
+            num = 0;
+            state = -1;
+            cout << "Matrix size is invalid. Setting data to NULL." << endl;
+        }
+        else {
+            data = new short[n * m];
+            for (int i = 0; i < n * m; i++) {
+                data[i] = value;
+            }
+        }
+    }
+    ~Matrix();
+    //4
+    Matrix(const Matrix& other) : rows(other.rows), cols(other.cols) {
+        data = new short[rows * cols];
+        for (int i = 0; i < rows * cols; i++) {
+            data[i] = other.data[i];
+        }
+    }
+
+    //4 Оператор присвоєння
+    Matrix& operator=(const Matrix& other) {
+        if (this != &other) {
+            // Вивільнення старої пам'яті
+            delete[] data;
+
+            // Виділяє нову пам'ять
+            rows = other.rows;
+            cols = other.cols;
+            data = new short[rows * cols];
+            for (int i = 0; i < rows * cols; i++) {
+                data[i] = other.data[i];
+            }
+        }
+        return *this;
+    }
+
+//6
+    void setElement(int row, int col, short value = 0) {
+        if (row < 0 || row >= rows || col < 0 || col >= cols) {
+            error = 1;
+            cout << "Error: Out of bounds access." << endl;
+        }
+        else {
+            data[row * cols + col] = value;
+        }
+    } 
+ /* 7*/  short getElement(int i, int j) const {
+        if (i < 0 || i >= rows || j < 0 || j >= cols) {
+            cout << "Error: Out of bounds access." << endl;
+            return 0;
+        }
+        else {
+            return data[i * cols + j];
+        }
+    }
+
+
+
+    Matrix(short n_rows, int n_cols) : rows(n_rows), cols(n_cols), num(n_rows* n_cols), error(0) {
+        data = new short[num];
+        memset(data, 0, num * sizeof(short));
+    }
+
+    Matrix multiply(const Matrix& other) const {
+        // Check if the matrices are compatible for multiplication
+        if (cols != other.rows) {
+            cout << "Error: Incompatible matrix sizes for multiplication." << endl;
+            return Matrix();
+        }
+
+        // Create the resulting matrix
+        Matrix result(rows, other.cols);
+
+        // Multiply the matrices and fill in the resulting matrix
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < other.cols; j++) {
+                short sum = 0;
+                for (int k = 0; k < cols; k++) {
+                    sum += data[i * cols + k] * other.getElement(k, j);
+                }
+                result.setElement(i, j, sum);
+            }
+        }
+
+        return result;
+    }
+
+};
+//5 Деструктор
+Matrix::~Matrix() {
+    delete[] data;
+}
+// 8
+void Matrix::print() const {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << data[i * cols + j] << " ";
+        }
+        cout << endl;
+    }
+}
+Matrix Matrix::Addition(const Matrix& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        Matrix result;
+        result.error = 1;
+        cout << "Error: Matrices must have the same size." << endl;
+        return result;
+    }
+
+    Matrix result(rows, cols);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result.data[i * cols + j] = data[i * cols + j] + other.data[i * cols + j];
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::subtraction(const Matrix& other) const {
+    if (rows != other.rows || cols != other.cols) {
+        Matrix result;
+        result.error = 1;
+        cout << "Error: Matrices must have the same size." << endl;
+        return result;
+    }
+
+    Matrix result(rows, cols);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result.data[i * cols + j] = data[i * cols + j] - other.data[i * cols + j];
+        }
+    }
+    return result;
+}
+Matrix createMatrix() {
+    int n, m;
+
+    cout << "Enter number of rows: ";
+    cin >> n;
+
+    cout << "Enter number of columns: ";
+    cin >> m;
+
+    Matrix mat(n, m);
+
+    cout << "Enter the elements of the matrix:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            short val;
+            cin >> val;
+            mat.setElement(i, j, val);
+        }
+    }
+    cout << "Your matrix:\n";
+    mat.print();
+    return mat;
+}//rand() % 10
+Matrix createrandMatrix() {
+    int n, m;
+    n = rand() % 7;
+    cout << "Number of rows: " << n << endl << endl;
+    m = rand() % 8;
+
+    cout << "Number of columns: " << m << endl << endl;
+
+    Matrix mat(n, m);
+
+    cout << "Enter the elements of the matrix:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            short val;
+            val = rand() % 10;
+            mat.setElement(i, j, val);
+        }
+    }
+    cout << "Your matrix:\n";
+    mat.print();
+    return mat;
+}
+Matrix FileMatrix(ofstream& fout2) {
+   
+    int n, m;
+
+    cout << "Enter number of rows: ";
+    cin >> n;
+    fout2 <<"n="<<n<< endl;
+    cout << "Enter number of columns: ";
+    cin >> m;
+    fout2 <<"m="<< m<<endl;
+
+    Matrix mat(n, m);
+    fout2 << "  Yout matrix" << endl;
+    cout << "Enter the elements of the matrix:" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            short val;
+            cin >> val;
+            fout2 << val<<endl;
+
+            mat.setElement(i, j, val);
+        }
+    }
+    fout2 << endl;
+    cout << "Your matrix:\n";
+    mat.print();
+    return mat;
+
+}
+
+
+void Task1_1() {
+    
     system("cls");
-    double a, b, h;
+    short a, b, h;
     unsigned int color;
 
         cout << "Enter a: ";
@@ -292,8 +572,82 @@ void Task1() {
 
     Parallelogram obj(a, b, h, color);//// Створює об'єкт паралелограм за допомогою введених користувачем даних
     obj.printInfo();
+}        
+void Task1_2() {
+
+    system("cls");
+    double a, b, h;
+    unsigned int color;
+
+   a= rand() % 1000;
+   b= rand() % 1000;
+   h= rand() % 1000;
+   color= rand() % 1000;
+   cout << "a=" << a << endl;
+   cout << "b=" << b << endl;
+   cout << "h=" << h << endl;
+   cout << "color=" << color << endl;
+
+
+    Parallelogram obj(a, b, h, color);//// Створює об'єкт паралелограм за допомогою введених користувачем даних
+    obj.printInfo();
 }
-void Task2() {
+void readfile() {
+    short a, b, h;
+
+    unsigned int color;
+    ifstream readfile("NewFile.txt");
+    readfile >> a >> b >> h >> color;
+}
+//Передбачити введення початкових даних : з файлу
+void Task1_3()
+{
+ system("cls");
+    ofstream fout1;
+    fout1.open("NewFile.txt");
+
+   
+   short a, b, h;
+
+   unsigned int color;
+   cout << "Enter size" << endl;
+  
+    cout << "Enter a: ";
+    cin >> a;
+ 
+
+
+    fout1 << "a: " << a << endl;
+
+
+ cout << "Enter b: ";
+    cin >> b;   
+
+    fout1 << "b: " << b << endl;
+
+
+ cout << "Enter h: ";
+
+ cin >> h;  
+ fout1 << "h: " << h << endl;
+
+  cout << "Enter color: ";
+
+    cin >> color;    
+    fout1 << "color: " << color << endl;
+    fout1.close();
+
+    readfile();
+
+  
+    Parallelogram obj(a, b, h, color);//// Створює об'єкт паралелограм за допомогою введених користувачем даних
+    obj.printInfo();
+
+}
+
+void Task2_1() {
+    system("cls");
+
     setlocale(LC_CTYPE, "ukr");
     int size;
     std::cout << "Enter the size of 1 the vector: ";
@@ -359,7 +713,347 @@ void Task2() {
     else {
         std::cout << "The vectors are not equal." << std::endl;
     }
-  //  getch();
+}
+void Task2_2() {
+    system("cls");
+
+    setlocale(LC_CTYPE, "ukr");
+    int size=rand() % 10;
+    cout << "The size of 1 the vector: "<<size<<endl;
+
+    // create a vector of the given size
+    ComplexVector v1(size);
+
+    cout << "Enter the elements of the vector:" << std::endl;
+    for (int i = 0; i < size; i++) {
+              short real_part= rand() % 100;
+              std::cout << "Element " << i + 1 << ": " << real_part << endl;
+       // std::cin >> real_part;
+        ComplexShort c(real_part);
+        v1.SetElement(i, c);
+    }
+    cout << endl;
+    int size1= rand() % 10;
+    std::cout << "Enter the size of 2 the vector: "<<size1<<endl;
+   // std::cin >> size1;
+    ComplexVector v2(size1);
+
+
+    std::cout << "Enter the elements of the vector:" << std::endl;
+    for (int i = 0; i < size1; i++) {
+             short real_part1= rand() % 100;
+   std::cout << "Element " << i + 1 << ": "<<real_part1<<endl;
+       // std::cin >> real_part1;
+        ComplexShort c(real_part1);
+        v2.SetElement(i, c);
+    }
+    // output the vectors
+    std::cout << "v1:" << std::endl;
+    v1.Output();
+    std::cout << "v2:" << std::endl;
+    v2.Output();
+
+    // add the vectors
+    ComplexVector v3 = v1.Add(v2);
+
+    // output the result
+    std::cout << "v1 + v2 = v3:" << std::endl;
+    v3.Output();
+
+    ComplexVector v4 = v1.Subtraction(v2);
+    // output the result
+    std::cout << "v1 - v2 = v4:" << std::endl;
+    v4.Output();
+    cout << "Введiть число для множення" << endl;
+    int scalar;
+    cin >> scalar;
+
+    cout << "Результат множення" << endl;
+    v1.ScalarMultiply(scalar);
+    cout << "Перший вектор:" << endl;
+    v1.Output();
+    v2.ScalarMultiply(scalar);
+    cout << "Другий вектор" << endl;
+    v2.Output();
+    cout << "Comparing the first and second vectors: \n";
+    if (v1.Compare(v2)) {
+        std::cout << "The vectors are equal." << std::endl;
+    }
+    else {
+        std::cout << "The vectors are not equal." << std::endl;
+    }
+}
+void Task2_3() {
+    system("cls");
+
+    ofstream fout;
+    fout.open("File.txt", fstream::in | fstream::out);
+    setlocale(LC_CTYPE, "ukr");
+    int size;
+    std::cout << "Enter the size of 1 the vector: ";
+    cin >> size;
+
+    fout << "The size of 1 the vector: ";
+    fout << size;
+
+    // create a vector of the given size
+    ComplexVector v1(size);
+    fout << "\nv1:\n";
+    std::cout << "Enter the elements of the vector:" << std::endl;
+    for (int i = 0; i < size; i++) {
+        short real_part;
+        cout << "Enter real and imaginary parts of element " << i + 1 << ": ";
+        cin >> real_part;
+        fout << real_part << endl;
+
+
+        ComplexShort c(real_part);
+        v1.SetElement(i, c);
+    }
+    
+
+        int size1;
+        std::cout << "Enter the size of 2 the vector: ";
+        std::cin >> size1;
+        fout << "The size of 2 the vector: " << size1;
+
+        ComplexVector v2(size1);
+
+        fout << "\nv2:\n";
+
+        std::cout << "Enter the elements of the vector:" << std::endl;
+        for (int i = 0; i < size1; i++) {
+            short real_part1;
+            std::cout << "Enter real and imaginary parts of element " << i + 1 << ": ";
+            std::cin >> real_part1;
+            fout << real_part1 << endl;
+
+            ComplexShort c(real_part1);
+            v2.SetElement(i, c);
+        }
+        fout.close();
+        ifstream readfile("File.txt");
+        for (int i = 0; i < size; i++) {
+            short real_part;
+
+            readfile >> real_part;
+        }
+        for (int i = 0; i < size1; i++) {
+            short real_part1;
+
+            readfile >> real_part1;
+        }
+        // output the vectors
+        std::cout << "v1:" << std::endl;
+        v1.Output();
+        std::cout << "v2:" << std::endl;
+        v2.Output();
+
+        // add the vectors
+        ComplexVector v3 = v1.Add(v2);
+
+        // output the result
+        std::cout << "v1 + v2 = v3:" << std::endl;
+        v3.Output();
+
+        ComplexVector v4 = v1.Subtraction(v2);
+        // output the result
+        std::cout << "v1 - v2 = v4:" << std::endl;
+        v4.Output();
+        cout << "Введiть число для множення" << endl;
+        int scalar;
+        cin >> scalar;
+
+        cout << "Результат множення" << endl;
+        v1.ScalarMultiply(scalar);
+        cout << "Перший вектор:" << endl;
+        v1.Output();
+        v2.ScalarMultiply(scalar);
+        cout << "Другий вектор" << endl;
+        v2.Output();
+        cout << "Comparing the first and second vectors: \n";
+        if (v1.Compare(v2)) {
+            std::cout << "The vectors are equal." << std::endl;
+        }
+        else {
+            std::cout << "The vectors are not equal." << std::endl;
+        }
+        fout.close();
+    
+}
+
+void Read() {
+ int n, m, val;
+ ifstream readfile("Txt_File.txt");
+ readfile >> n >> m;
+ for (int i = 0; i < n; i++) {
+     for (int j = 0; j < m; j++) {
+         double value;
+         readfile >> value;
+     }
+ }
+}
+void Task3_1() {
+    system("cls");
+    cout << "Creating the first matrix:" << endl;
+    Matrix mat1 = createMatrix();
+
+    // Create the second matrix
+    cout << "Creating the second matrix:" << endl;
+    Matrix mat2 = createMatrix();
+    Matrix mat3 = mat1.Addition(mat2);
+    cout << "The sum of the matrices is:" << endl;
+    mat3.print();
+    Matrix mat4 = mat1.subtraction(mat2);
+    cout << "The subtraction of the matrices is:" << endl;
+    mat4.print();
+    Matrix mat5 = mat1.multiply(mat2);
+    cout << "The multiply of the matrices is:" << endl;
+    mat5.print();
+    cout << "Multiplication of a matrix by a scalar of type short, enter scalar" << endl;
+
+    short scalar;
+    cin >> scalar;
+    cout << "First\n";
+    Matrix mat6 = mat1.multiplyScalar(scalar);
+    mat6.print();
+    cout << "Second\n";
+    Matrix mat7 = mat2.multiplyScalar(scalar);
+    mat7.print();
+    if (mat1.checkEqual(mat1, mat2)) {
+        cout << "mat1 and mat2 are equal" << endl;
+    }
+    else {
+        cout << "They are not equal" << endl;
+    }
+
+}
+void Task3_3() {
+   
+
+    ofstream fout2;
+    fout2.open("File1.txt", fstream::in | fstream::out);
+    system("cls");
+    cout << "Creating the first matrix:" << endl;
+    Matrix mat1 = FileMatrix(fout2);
+    Read();
+    // Create the second matrix
+    cout << "Creating the second matrix:" << endl;
+    Matrix mat2 = FileMatrix(fout2);
+    Read();
+     fout2.close();
+
+    cout << "The sum of the matrices is:" << endl;
+    Matrix mat3 = mat1.Addition(mat2);
+    mat3.print();
+    Matrix mat4 = mat1.subtraction(mat2);
+    cout << "The subtraction of the matrices is:" << endl;
+    mat4.print();
+    Matrix mat5 = mat1.multiply(mat2);
+    cout << "The multiply of the matrices is:" << endl;
+    mat5.print();
+    cout << "Multiplication of a matrix by a scalar of type short, enter scalar" << endl;
+
+    short scalar;
+    cin >> scalar;
+    cout << "First\n";
+    Matrix mat6 = mat1.multiplyScalar(scalar);
+    mat6.print();
+    cout << "Second\n";
+    Matrix mat7 = mat2.multiplyScalar(scalar);
+    mat7.print();
+    if (mat1.checkEqual(mat1, mat2)) {
+        cout << "mat1 and mat2 are equal" << endl;
+    }
+    else {
+        cout << "They are not equal" << endl;
+    }
+
+}
+void Task3_2() {
+    system("cls");
+
+    cout << "Creating the first matrix:" << endl;
+    Matrix mat1 = createrandMatrix();
+
+    // Create the second matrix
+    cout << "Creating the second matrix:" << endl;
+    Matrix mat2 = createrandMatrix();
+
+    Matrix mat3 = mat1.Addition(mat2);
+    cout << "The sum of the matrices is:" << endl;
+    mat3.print();
+    Matrix mat4 = mat1.subtraction(mat2);
+    cout << "The subtraction of the matrices is:" << endl;
+    mat4.print();
+    Matrix mat5 = mat1.multiply(mat2);
+    cout << "The multiply of the matrices is:" << endl<<endl;
+    mat5.print();
+    cout << "Multiplication of a matrix by a scalar of type short, enter scalar" << endl;
+
+    short scalar;
+    cin >> scalar;
+    cout << "First\n";
+    Matrix mat6 = mat1.multiplyScalar(scalar);
+    mat6.print();
+    cout << "Second\n";
+    Matrix mat7 = mat2.multiplyScalar(scalar);
+    mat7.print();
+    if (mat1.checkEqual(mat1, mat2)) {
+        cout << "mat1 and mat2 are equal" << endl;
+    }
+    else {
+        cout << "They are not equal" << endl;
+    }
+
+
+}
+void asd() {
+    int a; 
+    cout << "1, 2 or 3"<<endl ;cin >> a;
+        switch (a) {
+        case 1:
+            Task1_1();
+            break;
+        case 2:
+            Task1_2();
+            break;
+        case 3:
+            Task1_3();
+            break;
+        }
+
+}
+void bsd() {
+    int a; 
+    cout << "1, 2 or 3"<<endl ;cin >> a;
+        switch (a) {
+        case 1:
+            Task2_1();
+            break;
+        case 2:
+            Task2_2();
+            break;
+        case 3:
+            Task2_3();
+            break;
+        }
+}
+
+void csd() {
+    int a;
+    cout << "1, 2 or 3" << endl; cin >> a;
+    switch (a) {
+    case 1:
+        Task3_1();
+        break;
+    case 2:
+        Task3_2();
+        break;
+    case 3:
+        Task3_3();
+        break;
+    }
 }
 
 int main()
@@ -369,17 +1063,16 @@ int main()
     cin >> ch;
     switch (ch) {
     case(1):
-        Task1();
+        system("cls");
+        asd();
         break;
     case(2):
-       // Task2();
         system("cls");
-        Task2();
-
+        bsd();
         break;
     case(3):
         system("cls");
-
+        csd();
         break;
     }
     return 0;
